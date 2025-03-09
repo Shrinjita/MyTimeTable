@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+    background: linear-gradient(45deg, #FFC0CB, #FF69B4, #FF1493, #DB7093);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    color: white;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+th, td {
+    border: 1px solid white;
+    padding: 10px;
+}
+
+select {
+    padding: 10px;
+    margin-top: 20px;
+    background: #FF69B4;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
