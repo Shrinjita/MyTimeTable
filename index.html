@@ -4,7 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daywise Schedule</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background: linear-gradient(45deg, #FFC0CB, #FF69B4, #FF1493, #DB7093);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: white;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+        th, td {
+            border: 1px solid white;
+            padding: 10px;
+        }
+        select {
+            padding: 10px;
+            margin-top: 20px;
+            background: #FF69B4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h2>Daywise Schedule</h2>
@@ -26,6 +61,34 @@
         </tr>
     </table>
     
-    <script src="script.js"></script>
+    <script>
+        const schedule = {
+            "Day 1": ["CLOUD COMP 802", "DSA Practice", "SQL Practice", "Sales Project", "OPEN E", "SOFTWARE LAB", "FORAGE - Banking", "FORAGE - Goldman Sachs", "Reinforcement Learning", "Lunch", "FORAGE - PWC BI", "Attendance", "BCG Strategy Consulting", "Dinner", "Reinforcement Learning"],
+            "Day 2": ["DSA Practice", "FORAGE - Goldman Sachs", "Internship Work", "SOFTWARE", "Internship Work", "OPEN E 403", "AWS Cloud Educate", "Accenture Analytics", "SHE for AI", "Lunch", "AWS Cloud Educate", "Attendance", "AWS Cloud Educate", "Dinner", "SHE for AI"],
+            "Day 3": ["IMG VDO 301", "CLOUD", "RLT", "AWS Cloud Educate", "FORAGE - PWC Power BI", "Internship Work", "SQL + DSA", "Sales Project", "Sales Project", "Lunch", "Internship Tasks", "Attendance", "Internship Work", "Dinner", "Sales Project"],
+            "Day 4": ["REINFORCE LAB", "AWS Cloud Educate", "BCG Strategy Consulting", "RLT", "SOFTWARE", "CN", "FORAGE - TATA Viz", "BCG Strategy Consulting", "Internship Work", "Lunch", "Internship Tasks", "Attendance", "Sales Project", "Dinner", "Internship Tasks"],
+            "Day 5": ["CN", "IMG VDO", "DSA Practice", "Internship Work", "DSA Practice", "AWS Cloud Educate", "Internship Work", "PWC Power BI", "Internship Work", "Lunch", "AWS Cloud Educate", "Attendance", "Internship Work", "Dinner", "Internship Tasks"],
+            "Saturday": ["(College)", "(College)", "(College)", "(College)", "(College)", "Lunch", "Internship Work", "Internship Work", "BCG Strategy Consulting", "Break", "Internship Work", "Attendance", "AWS Cloud Educate", "Dinner", "BCG Strategy Consulting"],
+            "Sunday": ["Docker", "Kubernetes", ".NET", "Lunch", "CDN", "Servers", "AWS Cloud Educate", "Break", "AWS Cloud Educate", "Attendance", "AWS Cloud Educate", "Dinner", "AWS Cloud Educate"]
+        };
+        
+        function showSchedule() {
+            const day = document.getElementById("daySelector").value;
+            const table = document.getElementById("scheduleTable");
+            table.innerHTML = "<tr><th>Time Slot</th><th>Activity</th></tr>";
+            
+            const timeSlots = [
+                "08:00 - 08:50", "08:50 - 09:40", "09:40 - 10:35", "10:35 - 11:30", "11:30 - 12:25", "12:25 - 01:20", "01:20 - 02:15", "02:15 - 03:10", "03:10 - 04:30", "04:30 - 05:30", "05:30 - 06:50", "06:50 - 07:00", "07:00 - 08:00", "08:00 - 09:00", "09:00 - 11:00"
+            ];
+            
+            schedule[day].forEach((activity, index) => {
+                let row = table.insertRow();
+                row.insertCell(0).innerText = timeSlots[index];
+                row.insertCell(1).innerText = activity;
+            });
+        }
+        
+        showSchedule();
+    </script>
 </body>
 </html>
