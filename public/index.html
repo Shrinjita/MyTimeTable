@@ -162,6 +162,31 @@
         }
 
         document.addEventListener("DOMContentLoaded", updateSchedule);
+
+    function updateSchedule() {
+        const dayIndex = document.getElementById("daySelect").value;
+        const scheduleBody = document.getElementById("scheduleBody");
+        scheduleBody.innerHTML = "";
+
+        schedule.forEach((slot, index) => {
+            let task = slot.tasks[dayIndex] || "";
+
+            // Auto-fill empty tasks with "PROJECT", "COURSE", or "FORAGE"
+            if (task.trim() === "") {
+                const fillerWords = ["PROJECT", "COURSE", "FORAGE"];
+                task = fillerWords[index % fillerWords.length]; // Rotate through options
+                schedule[index].tasks[dayIndex] = task; // Save the default value
+            }
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${slot.time}</td>
+                <td><input type="text" value="${task}" onchange="editTask(${index}, ${dayIndex}, this)"></td>
+                <td><input type="checkbox" class="check" onchange="saveChecklist(${index}, this)" ${isCheckedToday(index) ? "checked" : ""}></td>
+            `;
+            scheduleBody.appendChild(row);
+        });
+    }
     </script>
 </body>
 </html>
