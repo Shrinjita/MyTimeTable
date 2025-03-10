@@ -28,12 +28,12 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        select {
+        select, input, button {
             padding: 10px;
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            margin-bottom: 20px;
+            margin: 10px;
         }
 
         table {
@@ -60,10 +60,15 @@
         tr:nth-child(odd) {
             background: #ffd1dc;
         }
+
+        .task-container {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>MyTimeTable</h1>
+
     <div class="container">
         <label for="daySelect">Choose a Day:</label>
         <select id="daySelect" onchange="updateSchedule()">
@@ -81,23 +86,32 @@
                 <tr>
                     <th>Time</th>
                     <th>Task</th>
+                    <th>Checklist</th>
                 </tr>
             </thead>
             <tbody id="scheduleBody"></tbody>
         </table>
     </div>
 
+    <div class="task-container">
+        <h2>Add Task</h2>
+        <input type="text" id="taskInput" placeholder="Enter task">
+        <button onclick="addTask()">Add</button>
+    </div>
+
     <script>
         const schedule = [
             { time: "07:00 - 08:00", tasks: ["Breakfast", "Breakfast", "Breakfast", "Breakfast", "Breakfast", "Breakfast", "Breakfast"] },
-            { time: "08:00 - 09:00", tasks: ["CLOUD 802", "SQL Practice", "IMG VDO 301", "REINFORCE LAB", "CN", "Docker", "CN"] },
-            { time: "09:00 - 10:00", tasks: ["CLOUD 802", "AWS Educate Course Practice", "IMG VDO 301", "REINFORCE LAB", "CN", "Kubernetes", "CDN"] },
-            { time: "10:00 - 11:00", tasks: ["Goldman Sachs – Excel Skills", "Tata – Data Visualization", "CLOUD 802", "SQL Practice", "IMG VDO", "SQL Practice", "BCGX - Data Science"] },
-            { time: "11:00 - 12:00", tasks: ["Accenture – Data Analytics", "Sparks Foundation – Internship Program", "RLT", "AWS Educate Course Practice", "JP Morgan – Internship Work", "AWS Educate Course", "JP Morgan"] },
-            { time: "12:00 - 01:00", tasks: ["EIA 403", "PWC – Power BI", "Bank of America – Internship Work", "BCGX – Data Science", "BCG – Strategy Consulting", "Full Stack Dev", "Multilingual LLM"] },
-            { time: "12:25 - 01:20", tasks: ["Lunch", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch", "Lunch"] },
-            { time: "01:20 - 02:00", tasks: ["SOFTWARE LAB", "Women Safety App", "Bank of America – Internship Work", "RLT", "Full Stack Development Project", "Bank of America", "Women Safety App"] },
-            { time: "04:30 - 05:00", tasks: ["Snacks", "Snacks", "Snacks", "Snacks", "Snacks", "Snacks", "Snacks"] },
+            { time: "08:00 - 08:50", tasks: ["CLOUD 802", "", "IMG VDO", "REINFORCE LAB", "CN", "Docker", "CN"] },
+            { time: "08:50 - 09:40", tasks: ["CLOUD 802", "", "IMG VDO 301", "REINFORCE LAB", "CN", "Kubernetes", "CDN"] },
+            { time: "09:40 - 10:35", tasks: ["", "", "CLOUD 802", "", "IMG VDO", "SQL Practice", "BCGX - Data Science"] },
+            { time: "10:35 - 11:30", tasks: ["", "", "RLT", "", "", "AWS Educate Course", "JP Morgan"] },
+            { time: "11:30 - 12:25", tasks: ["EIA 403", "", "", "", "", "", ""] },
+            { time: "12:25 - 01:20", tasks: ["SOFTWARE LAB", "Software", "", "RLT", "Lunch", "Lunch", "Lunch"] },
+            { time: "01:20 - 02:15", tasks: ["SOFTWARE LAB", "Software", "", "RLT", "Full Stack Development Project", "Bank of America", "Women Safety App"] },
+            { time: "02:15 - 03:10", tasks: ["SOFTWARE LAB", "EIA 403", "", "Software", "Full Stack Development Project", "Bank of America", "Women Safety App"] },
+            { time: "03:10 - 04:00", tasks: ["", "EIA 403", "", "CN", "Full Stack Development Project", "Bank of America", "Women Safety App"] },
+            { time: "04:30 - 05:00", tasks: ["Snacks", "Snacks", "Snacks", "Snacks", "Snacks", "Snacks", "Snacks"] }
             { time: "05:00 - 06:00", tasks: ["SQL Practice", "AWS Educate Course Practice", "Women Safety App", "Full Stack Development Project", "RLT Rack Project", "", ""] },
             { time: "06:00 - 07:00", tasks: ["Multilingual LLM", "Docker", "PWC – Power BI", "Kubernetes", "BCG – Strategy Consulting", "", ""] },
             { time: "07:00 - 08:00", tasks: ["BCGX – Data Science", "SQL Practice", "AWS Educate Course Practice", "Women Safety App", "Full Stack Development Project", "", ""] },
@@ -111,14 +125,64 @@
             const scheduleBody = document.getElementById("scheduleBody");
             scheduleBody.innerHTML = "";
 
-            schedule.forEach(slot => {
+            schedule.forEach((slot, index) => {
                 const row = document.createElement("tr");
+                const isChecked = localStorage.getItem(`check_${dayIndex}_${index}`) === "true";
+
                 row.innerHTML = `
                     <td>${slot.time}</td>
                     <td>${slot.tasks[dayIndex] || ""}</td>
+                    <td>
+                        <input type="checkbox" ${isChecked ? "checked" : ""} 
+                        onchange="toggleChecklist(${dayIndex}, ${index})">
+                    </td>
                 `;
                 scheduleBody.appendChild(row);
             });
+
+            resetChecklistDaily();
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById("taskInput").value.trim();
+            if (taskInput === "") {
+                alert("Please enter a task.");
+                return;
+            }
+
+            const dayIndex = document.getElementById("daySelect").value;
+            const taskTimeSlot = prompt("Enter time slot (e.g., 09:40 - 10:35):");
+
+            const slot = schedule.find(slot => slot.time === taskTimeSlot);
+            if (slot) {
+                slot.tasks[dayIndex] = taskInput;
+                localStorage.setItem("schedule", JSON.stringify(schedule));
+                updateSchedule();
+                document.getElementById("taskInput").value = "";
+            } else {
+                alert("Invalid time slot. Please enter a valid time.");
+            }
+        }
+
+        function toggleChecklist(dayIndex, taskIndex) {
+            const checkKey = `check_${dayIndex}_${taskIndex}`;
+            const currentValue = localStorage.getItem(checkKey);
+            localStorage.setItem(checkKey, currentValue === "true" ? "false" : "true");
+        }
+
+        function resetChecklistDaily() {
+            const lastResetDate = localStorage.getItem("lastResetDate");
+            const today = new Date().toDateString();
+
+            if (lastResetDate !== today) {
+                for (let i = 0; i < schedule.length; i++) {
+                    for (let j = 0; j < 7; j++) {
+                        localStorage.removeItem(`check_${j}_${i}`);
+                    }
+                }
+                localStorage.setItem("lastResetDate", today);
+                updateSchedule();
+            }
         }
 
         document.addEventListener("DOMContentLoaded", updateSchedule);
